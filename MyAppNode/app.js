@@ -1,12 +1,13 @@
 var express = require('express')
     , http = require('http')
-    , pages = require('./routes/pages');
+    , pages = require('./routes/pages')
+    , Facebook = require('facebook-node-sdk');
 
 var app = express();
 init_app();
 
 // routes
-app.get('/', pages.login);
+app.get('/', Facebook.loginRequired('/'), pages.login);
 
 
 
@@ -32,6 +33,7 @@ function init_app() {
   // Sessions
   app.use(express.cookieParser('chyllio-secret'));
   app.use(express.session({cookie: {maxAge: 1000*60*60}}));
+  app.use(Facebook.middleware({ appId: '588423224562138', secret: 'a2801d28795e4b9f42e3f8f101e7fb3b' }));
 
   // Always pass messages & logged in username through to template
   app.use(function(req, res, next) {
